@@ -2,13 +2,14 @@ const path = require('path');
 const fs = require('fs');
 
 let cwd = `${__dirname}/src`;
+let jsPath = `${cwd}/view/js`;
 
 exports.path = {
   js: `${cwd}/view/js/**/*.js`,
   html: `${cwd}/view/pages/*.html`,
 
   css:[`${cwd}/view/css/**/*.css`,`${cwd}/view/css/**/*.scss`],
-  img:[`${cwd}/view/img/*`],
+  img:[`${cwd}/view/images/*`],
 
   //dest
   dest: `${__dirname}/www`,
@@ -16,7 +17,7 @@ exports.path = {
   htmldest: `${__dirname}/www/views`,
   cssdest: `${__dirname}/www/static/css`,
   libjsdest: `${__dirname}/www/static/js/lib`,
-  imgdest:`${__dirname}/www/static/img`,
+  imgdest:`${__dirname}/www/static/images`,
 
   cwd: `${cwd}/view`,
 
@@ -25,8 +26,6 @@ exports.path = {
     js: ['**/*.js', `!**/lib/**`],
   }
 }
-
-let jsPath = `${cwd}/view/js`;
 
 exports.webpackEntry = (function (path) {
   let getFiles = function (jspath) {
@@ -50,3 +49,5 @@ exports.webpackEntry = (function (path) {
     return pre;
   },{});
 })(jsPath);
+
+exports.debugEntrance = 'report/12312789?version=100';

@@ -11,8 +11,10 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
+    "request": "^2.83.0",
     "think-cache": "^1.0.0",
     "think-cache-file": "^1.0.8",
+    "think-fetch": "^1.1.0",
     "think-logger3": "^1.0.0",
     "think-model": "^1.0.0",
     "think-model-mysql": "^1.0.0",
@@ -39,6 +41,7 @@
     "gulp-filter": "^5.1.0",
     "gulp-remember": "^1.0.1",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.6.1",
     "gulp-sass": "^3.1.0",
     "gulp-sequence": "^1.0.0",
     "gulp-sourcemaps": "^2.6.3",

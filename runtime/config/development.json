@@ -17,7 +17,7 @@
     "type": "file",
     "file": {
       "timeout": 86400000,
-      "cachePath": "/Users/lgl/job/vtellthinkjs/runtime/cache",
+      "cachePath": "/Users/lgl/github/vtellthinkjs/runtime/cache",
       "pathDepth": 1,
       "gcInterval": 86400000
     }
@@ -43,13 +43,13 @@
       "cookie": {
         "name": "thinkjs"
       },
-      "sessionPath": "/Users/lgl/job/vtellthinkjs/runtime/session"
+      "sessionPath": "/Users/lgl/github/vtellthinkjs/runtime/session"
     }
   },
   "view": {
     "type": "nunjucks",
     "nunjucks": {
-      "viewPath": "/Users/lgl/job/vtellthinkjs/www/views",
+      "viewPath": "/Users/lgl/github/vtellthinkjs/www/views",
       "sep": "_",
       "extname": ".html"
     }
@@ -61,14 +61,14 @@
       "backups": 10,
       "absolute": true,
       "maxLogSize": 51200,
-      "filename": "/Users/lgl/job/vtellthinkjs/logs/app.log"
+      "filename": "/Users/lgl/github/vtellthinkjs/logs/app.log"
     },
     "dateFile": {
       "level": "ALL",
       "absolute": true,
       "pattern": "-yyyy-MM-dd",
       "alwaysIncludePattern": true,
-      "filename": "/Users/lgl/job/vtellthinkjs/logs/app.log"
+      "filename": "/Users/lgl/github/vtellthinkjs/logs/app.log"
     }
   }
 }

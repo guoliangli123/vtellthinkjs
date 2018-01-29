@@ -27,6 +27,7 @@ const uglify = require('gulp-uglify');
 //css相关
 const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
+const replace = require('gulp-replace');
 
 //浏览器自动刷新
 const browserSync = require('browser-sync').create();
@@ -94,6 +95,7 @@ gulp.task('build:css', () => {
   const f = filter([cfg.path.filter.scss], { restore: true });
   return gulp.src(cfg.path.css)
     .pipe(changed(cfg.path.cssdest,{extension:'.css'}))
+    .pipe(replace('{{ constant.path_prefix }}', '/static'))
     .pipe(f)
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
@@ -121,7 +123,7 @@ gulp.task('build:html', () => {
 });
 
 gulp.task('build', ['clean'], (cb) => {
-  gulpSequence(['build:js', 'build:html', 'build:css'], cb);
+  gulpSequence(['build:js', 'build:html', 'build:css','build:img'], cb);
 });
 
 
@@ -134,7 +136,7 @@ gulp.task('browser-sync', ['dev'], (cb) => {
   console.log('构建完毕');
   setTimeout(() => {
     browserSync.init({
-      proxy: "http://127.0.0.1:8360/agreement"
+      proxy: `http://127.0.0.1:8360/${cfg.debugEntrance}`
     });
   }, 1000);
   cb();
