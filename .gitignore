@@ -28,6 +28,7 @@ node_modules/
 
 # output
 output/
+www/
 output.tar.gz
 
 # runtime/
