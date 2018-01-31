@@ -1,4 +1,5 @@
-const request  = require('../middleware/proxy/request');
+const request = require('../middleware/proxy/request');
+var requestPromise = require('request-promise');
 
 const METHOD_TYPES = {
   json: [
@@ -35,7 +36,7 @@ module.exports = class extends think.Controller {
     delete headersCopy['content-length'];
     // 干掉请求中的if-modified-since字段，以防命中服务端缓存，返回304
     delete headersCopy['if-modified-since'];
-    
+
     // 配置host，先把当前用户host存入user-host,然后把请求host赋值给headers
     headersCopy['user-host'] = headersCopy.host;
 
@@ -49,7 +50,7 @@ module.exports = class extends think.Controller {
 
   getRequestPayload() {
     let result = {};
-    console.log('原始body',this.ctx.request.body);
+    console.log('原始body', this.ctx.request.body);
     if (this.ctx.request.is(METHOD_TYPES.json)) {
       // result.json = this.ctx.request.body.post
       result.json = this.ctx.request.body.post;
@@ -70,21 +71,34 @@ module.exports = class extends think.Controller {
     let realRequestHeaders = Object.assign({}, origionRequestHeader.headers, options.headers);
     let origionRequestPayLoad = this.getRequestPayload();
 
-    let requestOption = Object.assign({}, origionRequestHeader, origionRequestPayLoad, options ,{
+    let requestOption = Object.assign({}, origionRequestHeader, origionRequestPayLoad, options, {
       gzip: false,
       encoding: null
     })
-    console.log('发送请求',requestOption);
-    return request(this.ctx, requestOption, (response, data) => {
-      // console.log(data);
-      // 如果返回的数据格式是string，则尝试JSON.parse
-      if (typeof data === 'string') {
-        try {
-          data = JSON.parse(data);
-          response.body = data;
-        } catch (err) { }
+    return request(this.ctx, requestOption, {
+      callBack: (response, data) => {
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data);
+            response.body = data;
+          } catch (err) { }
+        }
+        return response;
+      },
+      needPipeRes: true,
+    });
+  }
+
+  fetch(options) {
+    return requestPromise(options).then(res => {
+      let response = null;
+      try {
+        response = JSON.parse(res);
+      } catch (e) {
       }
-      return response;
+      finally {
+        return response || res;
+      }
     });
   }
 };

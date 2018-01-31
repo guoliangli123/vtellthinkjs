@@ -6,4 +6,5 @@ module.exports = class extends Base {
       uri:'http://youxitest.sohucs.com/api/reportvideo'
     });
   }
+
 };

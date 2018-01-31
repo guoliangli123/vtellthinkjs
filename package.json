@@ -12,6 +12,7 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "request": "^2.83.0",
+    "request-promise": "^4.2.2",
     "think-cache": "^1.0.0",
     "think-cache-file": "^1.0.8",
     "think-fetch": "^1.1.0",

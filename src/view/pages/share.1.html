@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{{ config.path_prefix }}/css/lib/mui.min.css">
+  <link rel="icon" href="{{ config.path_prefix }}/favicon.ico" type="image/x-icon" />
+  <title>{{title}}</title>
+  <script>
+    var deviceWidth = document.documentElement.clientWidth < 750 ? document.documentElement.clientWidth : 750;
+    document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+  </script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js" type="text/javascript"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background-color: #fff;
+      color: #fff;
+      font-family: PingFangSC, arial, verdana, Microsoft YaHei, sans-serif
+    }
+
+    p {
+      color: #fff
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99;
+      width: 100%;
+      height: 1.1rem;
+      background-color: #fff;
+      line-height: 1.1rem;
+      transition: all .2s ease-in
+    }
+
+    .header.play {
+      display: none;
+    }
+
+    .header-wrap {
+      position: relative
+    }
+
+    .logo {
+      display: inline-block;
+      margin-left: .15rem;
+      width: .8rem;
+      height: .8rem;
+      background:url("{{ config.path_prefix }}/images/logo-2@2x.png") 0 0 no-repeat;
+      background-size: 100%;
+      vertical-align: middle
+    }
+
+    .title {
+      display: inline-block;
+      margin-left: .29rem;
+      vertical-align: middle;
+      font-weight: 700;
+      font-size: .36rem;
+      color:#181b24;
+    }
+
+    .js_open_app {
+      border-radius: 1rem;
+      background-image: linear-gradient(72deg, #ff7b48, #ff1782) !important;
+      color: #fff;
+      font-size: .3rem;
+      line-height: 1.5
+    }
+
+    .js_open_app:active {
+      color: #fff
+    }
+
+    .header .js_open_app {
+      position: absolute;
+      top: 50%;
+      right: .3rem;
+      padding: .14rem .5rem;
+      transform: translateY(-50%)
+    }
+
+    .video-mask {
+      position: relative
+    }
+
+    video {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: scale-down;
+      background: #181820;
+    }
+
+    .height-video video{
+      object-position: 50% 0% !important;
+    }
+
+    .video-content.play video {
+      display: block
+    }
+
+    .video-content.play .video-info {
+      display: none
+    }
+
+    .video-content.play .video-playing-info {
+      display: block
+    }
+
+    .video-content.play .video-thumb-img {
+      display: none
+    }
+
+    .height-video .start-button{
+      top: 20%;
+    }
+
+    .start-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      display: inline-block;
+      width: 1.1rem;
+      height: 1.1rem;
+      background:url("{{ config.path_prefix }}/images/play-button.svg") no-repeat;
+      background-size: 100%;
+      transform: translate(-50%, -50%)
+    }
+    
+    #videoControl {
+      transition: all .08s ease-in-out;
+      transform-origin: 150% 150%
+    }
+
+    #videoControl.play {
+      opacity: 0;
+      transform: scale(1.5)
+    }
+
+    .video-content.play #showVideo {
+      display: none
+    }
+
+    .video-thumb-img {
+      padding-top: 1.1rem;
+      width: 100%;
+      object-fit: cover;
+      object-position: 50% 20%;
+    }
+
+    .video-title {
+      display: -webkit-box;
+      overflow: hidden;
+      margin-bottom: .38rem;
+      text-overflow: ellipsis;
+      text-shadow: 0 2px 1px rgba(0, 0, 0, .5);
+      font-size: .3rem;
+      line-height: 1.428;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical
+    }
+
+    .video-title .user-name {
+      color: #fda609;
+      font-size: .3rem;
+      margin-right: .2rem;
+    }
+
+    .video-playing-info {
+      position: absolute;
+      z-index: 10;
+      display: none;
+      width: 100%;
+      top:0;
+    }
+    .video-playing-info.height .head-img{
+      position: fixed;
+      top:.3rem;
+    }
+
+    .video-playing-info .head-img {
+      position: absolute;
+      top:1.2rem;
+      width: 100%;
+      padding-right: .3rem;
+      padding-left: .3rem;
+    }
+
+    .video-playing-info .head-img img {
+      border-radius: 50%;
+      width: .64rem;
+      height: .64rem;
+      vertical-align: middle;
+    }
+
+    .video-playing-info .head-img .add-follow{
+      float: right;
+      font-size: .3rem;
+      color:#ed3649;
+      cursor: pointer;
+    }
+
+    .video-playing-info .head-img .add-follow img{
+      vertical-align: middle;
+      width: .28rem;
+      margin-right: 5px;
+      position: relative;
+      top: -2px;
+    }
+    .video-playing-info .head-img .username {
+      font-size: .28rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.77);
+      text-shadow: 0 2px 1px rgba(0, 0, 0, 0.5);
+      vertical-align: middle;
+    }
+    /* 播放页右侧导航 */
+
+    .video-playing-info .right-area {
+      position: absolute;
+      top:8rem;
+      right: .1rem;
+      width: 100%;
+      padding-left: .3rem;
+      padding-right: .15rem;
+      overflow: hidden;
+      margin-right: 0;
+    }
+    .video-playing-info.height .right-area{
+      top: -5rem; 
+    }
+    .right-area>div {
+      overflow: hidden;
+    }
+
+    .right-area span {
+      font-size: .26rem;
+    }
+
+    .right-area .first-line {
+      margin-bottom: .15rem;
+    }
+
+    .right-area>div:not(.first-line) {
+      position: relative;
+      left: 5px;
+    }
+
+    .right-area>div div {
+      margin-right: .25rem;
+      float: left;
+      min-width: .64rem;
+    }
+
+    .right-area>div>p {
+      font-size: .28rem;
+    }
+
+    .right-area>div>p>img {
+      width: .26rem;
+      height: .26rem;
+    }
+
+    .right-area .play-info {
+      color: #81848d;
+      float: right;
+    }
+
+    .right-area .challenge>p {
+      color: #ffb500;
+    }
+
+    .right-area>div div img {
+      /* display: inline-block; */
+      width: .66rem;
+      height: .66rem;
+      vertical-align: middle;
+    }
+    /* 播放结束时list */
+
+    .stop-recommend-list {
+      position: absolute;
+      opacity: 0;
+      top: 0rem;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      background: rgba(0, 0, 0, .8);
+      z-index: -1;
+    }
+
+    .stop-recommend-list.weixin {
+      top: 1.1rem;
+    }
+
+    .controls-wrap {
+      margin-top: .6rem;
+      display: flex;
+      justify-content: space-around;
+
+    }
+
+    .controls-wrap span {
+      display: inline-block;
+      flex-basis: 3.2rem;
+      font-size: .3rem;
+      font-weight: 500;
+      height: .8rem;
+      line-height: .8rem;
+      border-radius: .08rem;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .replay {
+      border: 1px solid #fff;
+    }
+
+    .replay-open {
+      background-image: linear-gradient(79deg, #ff654c, #ff2457);
+    }
+
+    .stop-recommend-list .bottom {
+      text-align: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: .3rem;
+    }
+
+    .stop-recommend-list .bottom .arrow {
+      margin: 0 auto;
+      position: relative;
+      width: .22rem;
+      height: .14rem;
+      background: url("{{ config.path_prefix }}/images/more-arrow.svg");
+      background-size: 100%;
+      background-repeat: no-repeat;
+      animation: arrow 1s ease-in-out infinite;
+      -webkit-animation: arrow 1s ease-in-out infinite;
+    }
+
+    @keyframes arrow {
+      form {
+        -webkit-transform: translate(0, -50%);
+        transform: translate(0, -50%)
+      }
+      to {
+        -webkit-transform: translate(0, -50%);
+        transform: translate(0, -50%)
+      }
+    }
+
+    @-webkit-keyframes arrow {
+      form {
+        -webkit-transform: translate(0, -50%);
+        transform: translate(0, -50%)
+      }
+      to {
+        -webkit-transform: translate(0, -50%);
+        transform: translate(0, -50%)
+      }
+    }
+
+    .video-info {
+      position: absolute;
+      bottom: 0;
+      z-index: 10;
+      padding: 0 .2rem .29rem;
+      width: 100%
+    }
+
+    .video-info-bottom {
+      display: flex;
+      width: 100%;
+      height: .7rem;
+      align-items: center
+    }
+
+    .user-avatar {
+      margin-right: .2rem;
+      width: .7rem;
+      height: .7rem;
+      border-radius: 50%;
+      vertical-align: middle;
+      border:2px solid #fff;
+    }
+
+    .user-name {
+      display: inline-block;
+      overflow: hidden;
+      max-width: 3.8rem;
+      vertical-align: middle;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .32rem
+    }
+
+    .follow {
+      position: absolute;
+      right: .22rem;
+      display: inline-block;
+      width: .9rem;
+      height: .5rem;
+      border-radius: .51rem;
+      background: #fff;
+      color: #ed3649;
+      text-align: center;
+      font-size: .26rem;
+      line-height: .51rem
+    }
+
+    .follow:active {
+      color: #ed3649;
+    }
+
+    .video-container {
+      display: none;
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .play .video-container {
+      display: block;
+    }
+
+    .recommend-title {
+      margin: 0;
+      padding: .44rem 0;
+      color: #181b24;
+      text-align: center;
+      font-weight: 700;
+      font-size: .28rem;
+      height:.48rem;
+      line-height:.48rem;
+      box-sizing: content-box;
+      background:url("{{ config.path_prefix }}/images/recommend-title-bg.svg") no-repeat;
+      background-position:50%;
+      background-size:10%;
+    }
+
+    .recommend-title::before {
+      position: relative;
+      left: -.29rem;
+      display: inline-block;
+      width: .52rem;
+      height: .2rem;
+      background:url("{{ config.path_prefix }}/images/recommend-title-before.svg");
+      background-size: 100%;
+      content: ""
+    }
+
+    .recommend-title::after {
+      position: relative;
+      left: .29rem;
+      display: inline-block;
+      width: .52rem;
+      height: .2rem;
+      background:url("{{ config.path_prefix }}/images/recommend-title-before.svg");
+      background-size: 100%;
+      content: ""
+    }
+
+    .recommend-video-list {
+      overflow: hidden;
+    }
+
+    .recommend-video {
+      position: relative;
+      float: left;
+      margin: 0 1px 2px 0;
+      width: calc(50% - .5px);
+      padding-top: 72%;
+      width: -webkit-calc(50% - .5px);
+      background-size: cover;
+      background-position: center 20%;
+      background-repeat: no-repeat;
+      list-style: none;
+    }
+
+    .stop-recommend-list .recommend-video{
+      padding-top:50%;
+    }
+
+    .recommend-video.last {
+      margin-right: 0px;
+    }
+
+    .recommend-video-info {
+      position: absolute;
+      bottom: -1px;
+      padding: 0 .2rem .12rem;
+      width: 100%;
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), #181820);
+    }
+
+    .recommend-video-title {
+      display: -webkit-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 2px 2px rgba(0, 0, 0, .8);
+      font-size: .28rem;
+      line-height: 1.428;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical
+    }
+
+    .icon-wrap {
+      margin-right: .3rem;
+      font-size: .22rem
+    }
+
+    .icon {
+      display: inline-block;
+      width: .27rem;
+      height: .23rem;
+      vertical-align: middle;
+      background-repeat: no-repeat;
+      background-size: 100%
+    }
+
+    .icon.like {
+      background-image:url("{{ config.path_prefix }}/images/like.svg");
+    }
+
+    .icon.play {
+      background-image:url("{{ config.path_prefix }}/images/play.svg");
+    }
+
+    .recommend-bottom {
+      color: #37456a;
+      text-align: center;
+      font-size: .24rem;
+      line-height: 1.5;
+      margin:0;
+    }
+
+    footer {
+      margin-top:0.2rem;
+      position: relative;
+      height: 2.88rem;
+      background:url("{{ config.path_prefix }}/images/bottom-logo@2x.png") no-repeat;
+      background-size: 100%
+    }
+
+    .js_download_app {
+      border-radius: .7rem;
+      background-image:linear-gradient(72deg, #ff7b48, #ff1782);
+      color: #fff;
+      font-weight: 500
+    }
+
+    .js_download_app:active {
+      color: #fff
+    }
+
+    footer .js_download_app {
+      position: absolute;
+      bottom: .43rem;
+      right: 1.8rem;
+      padding: .14rem .7rem;
+      font-size: .3rem;
+      line-height: 1.5;
+    }
+
+    .download-container-mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 90;
+      display: none
+    }
+
+    .download-container {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      z-index: 95;
+      margin-top: -2.23rem;
+      margin-left: -2.5rem;
+      width: 5rem;
+      height: 4.46rem;
+      border-radius: .2rem;
+      background-color: #14122d;
+      background-image:url("{{ config.path_prefix }}/images/group@2x.png");
+      background-size: 102%;
+      background-repeat: no-repeat;
+      text-align: center
+    }
+
+    .download-container .close {
+      position: absolute;
+      top: .1rem;
+      right: .1rem;
+      display: inline-block;
+      width: .48rem;
+      height: .48rem;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, .3);
+      font-size: .48rem;
+      line-height: .48rem;
+      font-weight:500;
+    }
+
+    .download-container .content {
+      margin-top: 2.36rem;
+      text-align: center;
+    }
+
+    .download-container .download-link {
+      display: inline-block;
+      padding: .18rem .87rem;
+      border-radius: .7rem;
+      background-image: linear-gradient(77deg, #ff7b48, #ff1782);;
+      color: #fff;
+      font-weight: 500;
+      font-size: .32rem
+    }
+
+    .download-title {
+      margin: .3rem 0 .48rem;
+      color:#181b24;
+      font-weight: 700;
+      font-size: .38rem
+    }
+
+    .weixin-share-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 101;
+      display: none;
+      background-color: rgba(0, 0, 0, .3)
+    }
+
+    .share-arrow {
+      position: absolute;
+      top: .5rem;
+      right: .6rem;
+      width: 1.33rem;
+      height: 1.75rem
+    }
+
+    .share-tip {
+      position: absolute;
+      top: 2rem;
+      right: .38rem;
+      width: 4.65rem;
+      height: .43rem
+    }
+
+    .weibo-open-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 101;
+      display: none;
+      background-color: rgba(0, 0, 0, .3)
+    }
+
+    .weibo-share-arrow {
+      top: .2rem;
+      right: .43rem;
+    }
+
+    .weibo-share-tip {
+      top: 2rem;
+    }
+
+    @-webkit-keyframes bounceInDown {
+      60%,
+      75%,
+      90%,
+      from,
+      to {
+        -webkit-animation-timing-function: cubic-bezier(.215, .61, .355, 1);
+        animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+      }
+      0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -3000px, 0);
+        transform: translate3d(0, -3000px, 0)
+      }
+      60% {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 25px, 0);
+        transform: translate3d(0, 25px, 0)
+      }
+      75% {
+        -webkit-transform: translate3d(0, -10px, 0);
+        transform: translate3d(0, -10px, 0)
+      }
+      90% {
+        -webkit-transform: translate3d(0, 5px, 0);
+        transform: translate3d(0, 5px, 0)
+      }
+      to {
+        -webkit-transform: none;
+        transform: none
+      }
+    }
+
+    @keyframes bounceInDown {
+      60%,
+      75%,
+      90%,
+      from,
+      to {
+        -webkit-animation-timing-function: cubic-bezier(.215, .61, .355, 1);
+        animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+      }
+      0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -3000px, 0);
+        transform: translate3d(0, -3000px, 0)
+      }
+      60% {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 25px, 0);
+        transform: translate3d(0, 25px, 0)
+      }
+      75% {
+        -webkit-transform: translate3d(0, -10px, 0);
+        transform: translate3d(0, -10px, 0)
+      }
+      90% {
+        -webkit-transform: translate3d(0, 5px, 0);
+        transform: translate3d(0, 5px, 0)
+      }
+      to {
+        -webkit-transform: none;
+        transform: none
+      }
+    }
+
+    .bounceInDown {
+      -webkit-animation-name: bounceInDown;
+      animation-name: bounceInDown
+    }
+
+    @-webkit-keyframes bounceOutUp {
+      20% {
+        -webkit-transform: translate3d(0, -10px, 0);
+        transform: translate3d(0, -10px, 0)
+      }
+      40%,
+      45% {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 20px, 0);
+        transform: translate3d(0, 20px, 0)
+      }
+      to {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -2000px, 0);
+        transform: translate3d(0, -2000px, 0)
+      }
+    }
+
+    @keyframes bounceOutUp {
+      20% {
+        -webkit-transform: translate3d(0, -10px, 0);
+        transform: translate3d(0, -10px, 0)
+      }
+      40%,
+      45% {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 20px, 0);
+        transform: translate3d(0, 20px, 0)
+      }
+      to {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -2000px, 0);
+        transform: translate3d(0, -2000px, 0)
+      }
+    }
+
+    .bounceOutUp {
+      -webkit-animation-name: bounceOutUp;
+      animation-name: bounceOutUp
+    }
+
+    .animated {
+      -webkit-animation-duration: .8s;
+      animation-duration: .8s;
+      -webkit-animation-fill-mode: both;
+      animation-fill-mode: both
+    }
+
+    .mui-toast-container {
+      bottom: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .video-container .videoplayer-thumb-img {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="video-content">
+    <div class="video-mask">
+      <div class="header">
+        <div class="header-wrap">
+          <a href="javascript:;" class="logo"></a>
+          <span class="title">有戏短视频</span>
+          <a href="javascript:;" class="js_open_app">打开看看</a>
+        </div>
+      </div>
+      <span class="start-button" id="showVideo"></span>
+      <img src="{{videoInfo.staticCoverUrl  or config.path_prefix + '/images/logo.png'}}" class="video-thumb-img">
+      <div class="video-info">
+        <p class="video-title js_download_dialog_button">{{title}}</p>
+        <div class="video-info-bottom">
+          <img src="{{videoInfo.author.authorAvatarUrl or config.path_prefix + '/images/logo.png' }}" alt="用户头像" class="user-avatar js_download_dialog_button">
+          <span class="user-name js_download_dialog_button">{{videoInfo.author.authorName}}</span>
+          <a href="javascript:;" class="follow js_download_dialog_button">关注</a>
+        </div>
+      </div>
+      <div class="video-playing-info {% if aspectRatio == 1 %} height {% endif %}">
+        <div class="head-img js_download_dialog_button">
+          <img src="{{videoInfo.author.authorAvatarUrl or config.path_prefix + '/images/logo.png' }}" alt="用户头像" class="user-avatar js_download_dialog_button">
+          <span class="username">{{videoInfo.author.authorName}}</span>
+          <span class="add-follow"><img src="{{ config.path_prefix }}/images/plus.svg"/>关注</span>
+        </div>
+        <div class="right-area">
+          <div class="first-line">
+            <div class="js_download_dialog_button">
+              <img src="{{ config.path_prefix }}/images/comment.svg" alt="评论">
+              <span>{{videoInfo.countInfo.commentCount or 0}}</span>
+            </div>
+            <div class="js_download_dialog_button">
+              <img src="{{ config.path_prefix }}/images/like.svg" alt="喜欢">
+              <span>{{videoInfo.countInfo.likeCount or 0}}</span>
+            </div>
+            <div class="js_share_button">
+              <img src="{{ config.path_prefix }}/images/share.svg" alt="分享">
+            </div>
+            <div class="play-info">
+              <span>{{videoInfo.countInfo.viewCount or 0}}播放</span>
+            </div>
+          </div>
+          {% if videoInfo.materialInfo.belongMaterialAlbumInfo[0].materialAlbumName %}
+          <div class="album">
+            <p><img src="{{ config.path_prefix }}/images/album.svg" alt="专辑"> 专辑：{{videoInfo.materialInfo.belongMaterialAlbumInfo[0].materialAlbumName}}
+            </p>
+          </div>
+          {% endif %} {% if videoInfo.challengeInfo.challengeTitle %}
+          <div class="challenge">
+            <p><img src="{{ config.path_prefix }}/images/challenge.svg" alt="挑战"> {{videoInfo.challengeInfo.challengeTitle}}
+            </p>
+          </div>
+          {% endif %}
+          <div>
+            <p>{{title}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="video-container {% if aspectRatio == 1 %} height-video {% endif %}">
+        <span class="start-button" id="videoControl"></span>
+        <video id="videoDom" webkit-playsinline="true" x-webkit-airplay="true" playsinline="true" x5-video-player-type="h5" x5-video-player-fullscreen="true"
+          width="100%" preload="auto" poster="{{videoInfo.staticCoverUrl}}">
+          <source src="{{videoInfo.playInfos[0].url}}" type="video/mp4">
+        </video>
+        <img src="{{videoInfo.staticCoverUrl}}" class="videoplayer-thumb-img">
+        <span class="loading-spinner"></span>
+      </div>
+      <div class="stop-recommend-list">
+        <ul class="recommend-video-list">
+          {% for item in topVideoList %} {% if loop.index%2==0 %}
+          <li class="recommend-video last js_download_dialog_button" style="background-image:url({{item.staticCoverUrl}})">
+            {% else %}
+            <li class="recommend-video js_download_dialog_button" style="background-image:url({{item.staticCoverUrl}})">
+              {% endif %}
+              <span class="start-button js_download_dialog_button"></span>
+              <div class="recommend-video-info">
+                <p class="recommend-video-title">{{item.caption}}</p>
+                <!-- <div class="recommend-video-bottom">
+                  <span class="icon-wrap recommend-video-like">
+                            <span class="icon like"></span>
+                  <span class="frequency">{{item.countInfo.likeCount or 0}}</span>
+                  </span>
+                  <span class="icon-wrap recommend-video-play">
+                            <span class="icon play"></span>
+                  <span class="frequency">{{item.countInfo.viewCount or 0}}</span>
+                  </span>
+                </div> -->
+              </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="controls-wrap">
+          <span class="replay">重播</span>
+          <span class="js_open_app replay-open">我也要拍</span>
+        </div>
+        <div class="bottom">
+          <p>上滑查看更多</p>
+          <div class="arrow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="recommend">
+    <p class="recommend-title">今日热门推荐</p>
+    <ul class="recommend-video-list">
+      {% for item in recommendList %} {% if loop.index%2==0 %}
+      <li class="recommend-video last js_download_dialog_button" style="background-image:url({{item.staticCoverUrl}})">
+        {% else %}
+        <li class="recommend-video js_download_dialog_button" style="background-image:url({{item.staticCoverUrl}})">
+          {% endif %}
+          <span class="start-button js_download_dialog_button"></span>
+          <div class="recommend-video-info">
+            <p class="recommend-video-title">{{item.caption}}</p>
+            <!-- <div class="recommend-video-bottom">
+              <span class="icon-wrap recommend-video-like">
+                            <span class="icon like"></span>
+              <span class="frequency">{{item.countInfo.likeCount or 0}}</span>
+              </span>
+              <span class="icon-wrap recommend-video-play">
+                            <span class="icon play"></span>
+              <span class="frequency">{{item.countInfo.viewCount or 0}}</span>
+              </span>
+            </div> -->
+          </div>
+        </li>
+        {% endfor %}
+    </ul>
+  </div>
+  <footer>
+    <p class="recommend-bottom">更多精彩，请前往客户端体验</p>
+    <a href="javascript:;" class="bottom-logo"></a>
+    <a href="javascript:;" class="js_download_app js_download_dialog_button">下载</a>
+  </footer>
+  <div class="download-container-mask">
+    <div class="download-container animated">
+      <span class="close">×</span>
+      <div class="content">
+        <p class="download-title">有戏短视频</p>
+        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.sohu.vtell" class="download-link">下载 App</a>
+      </div>
+    </div>
+  </div>
+  <div class="weixin-share-container">
+    <img src="{{ config.path_prefix }}/images/share-arrow.svg" class="share-arrow">
+    <img src="{{ config.path_prefix }}/images/share-tip.png" srcset="{{ config.path_prefix }}/images/share-tip@2x.png 2x,{{ config.path_prefix }}/images/share-tip@3x.png 3x"
+      class="share-tip">
+  </div>
+  <div class="weibo-open-container">
+    <img src="{{ config.path_prefix }}/images/share-arrow.svg" class="share-arrow weibo-share-arrow">
+    <span class="share-tip weibo-share-tip">从这里，选择在浏览器中打开～</span>
+  </div>
+</body>
+<script src="{{ config.path_prefix }}/js/lib/mui.min.js"></script>
+<script src="https://apps.bdimg.com/libs/zepto/1.1.4/zepto.min.js"></script>
+<script src="{{ config.path_prefix }}/js/lib/zepto.touch.min.js"></script>
+
+<script type="text/javascript">
+    var _config = {
+      videoId: '{{ videoId }}',
+      verified: '{{ verified }}',
+      aspectRatio:'{{aspectRatio}}',
+    };
+
+    var _base_config = {
+      prefix: '{{ config.path_prefix }}',
+      shareImgUrl: '{{ shareInfo.shareImgUrl }}',
+      shareTitle: '{{ title }}',
+      shareImgUrl: '{{shareInfo.shareImgUrl}}',
+      appMessageTitle: '{{shareInfo.appMessageTitle}}',
+      appMessageDesc: '{{shareInfo.appMessageDesc}}',
+      timelineTitle: '{{shareInfo.timelineTitle}}',
+      weiboMessageTitle: '{{shareInfo.weiboMessageTitle}}',
+    }
+
+</script>
+
+<script>
+        Zepto(function ($) {
+
+          function setPlayInfo(){
+            if(Math.abs(_config.aspectRatio - 1.3) < 0.1){
+              $('.video-playing-info .head-img').css('top',document.documentElement.clientHeight/2 - document.documentElement.clientWidth/4*3/2 - 40);
+              $('.right-area').css('top',document.documentElement.clientHeight/2 + document.documentElement.clientWidth/4*3/2 + 15);
+            }
+            else if(_config.aspectRatio = 0.5625){
+              $('.right-area').css('top',document.documentElement.clientHeight -100 );
+              $('.video-playing-info .head-img').css('display','none');
+            }
+          }
+
+          (function init() {
+            $('.video-thumb-img').height(document.documentElement.clientWidth);
+            $('.video-container').height(document.documentElement.clientHeight);
+            $('video').width(document.documentElement.clientWidth);
+            setPlayInfo();
+          })();
+
+          window.addEventListener('resize', function (event) {
+            var deviceWidth = document.documentElement.clientWidth < 750 ? document.documentElement.clientWidth : 750;
+            document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+            $('.video-container').height(document.documentElement.clientHeight);
+            setPlayInfo();
+          });
+
+          $.fn.touchClick = function (callback) {
+            this.each(function () {
+              var obj = $(this);
+              obj.on("touchstart", function () {
+                obj.data("move", false);
+              }).on("touchmove", function () {
+                obj.data("move", true);
+              }).on("touchend", function (event) {
+                if (obj.data("move")) {
+                  return;
+                } else {
+                  if (typeof callback === "function") {
+                    callback(obj, event);
+                  }
+                }
+                obj.data("move", false);
+              });
+            });
+          };
+          var totalTime, currentTime, paused, userAgent = navigator.userAgent, addplaycount = true;
+
+          //判断手机类型
+          var isIos = !!userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+          var isAndroid = userAgent.indexOf('Android') > -1 || userAgent.indexOf('Adr') > -1; //android终端
+          var isQQ = (/qq/ig).test(userAgent);
+          var isWeiXin = (/MicroMessenger/ig).test(userAgent);
+          var isWeiBo = (/weibo/ig).test(userAgent);
+
+          var schemeStr = 'vtell://video/' + _config.videoId + '?from=args_from_h5';
+          var initPhonetype = (function () {
+            if (isAndroid) {
+              $('.download-link').data('href', 'http://a.app.qq.com/o/simple.jsp?pkgname=com.sohu.vtell');
+            }
+            else if (isIos) {
+              $('.download-link').data('href', 'http://a.app.qq.com/o/simple.jsp?pkgname=com.sohu.vtell');
+            }
+            if (isWeiXin) {
+              $('.stop-recommend-list').addClass('weixin');
+            }
+          })();
+
+          function pause() {
+            $('#videoDom')[0].pause();
+            $('#videoControl').removeClass('play');
+          }
+
+          function play() {
+            $('#videoDom')[0].play();
+            $('#videoDom').css('top', 0);
+            $('#videoControl').addClass('play');
+            $('.header').addClass('play');
+          }
+
+          $('#showVideo').click(function (e) {
+            if (_config.verified === '1' || _config.verified === '0') {
+              $('.video-content').addClass('play');
+              $('.header').addClass('play');
+              // $('.video-container .videoplayer-thumb-img').show();
+              play();
+            }
+            else {
+              mui.toast('视频已被删除', { duration: 1000 });
+            }
+          });
+
+          //video事件
+          $('#videoDom')[0].addEventListener("durationchange", function () {
+            totalTime = $('#videoDom')[0].duration;//获取总时长
+          });
+
+
+          $('#videoDom')[0].addEventListener('timeupdate', function () {
+            currentTime = $('#videoDom')[0].currentTime;
+            if (currentTime > 0.05) {
+              // $('.video-container .videoplayer-thumb-img').hide();
+            }
+            if (currentTime > 1 && addplaycount) {
+              $.ajax({
+                type: 'POST',
+                url: '/nodeapi/addplaycount',
+                data: JSON.stringify({ "videoId": _config.videoId }),
+                dataType: 'json',
+                contentType: 'application/json',
+                timeout: 10000,
+                success: function (data) {
+                  addplaycount = false;
+                  console.log('add playcount success');
+                },
+                error: function (xhr, type, err) {
+                  addplaycount = false;
+                  console.log('add playcount error');
+                }
+              })
+            }
+          });
+
+          $('#videoDom')[0].addEventListener('ended', function () {
+            $(this).css('top', '9999px');
+            $('.header').removeClass('play');
+            $('.weixin-share-container').hide();
+            $('.video-playing-info').show();
+            $('.stop-recommend-list').css({ 'opacity': 1, 'zIndex': 90 });
+            this.currentTime = 0;
+          });
+          //微信浏览器video事件
+          $('#videoDom')[0].addEventListener("x5videoenterfullscreen", function () {
+            $('.share-arrow').css('top', '.5rem');
+            $('.share-tip').css('top', '2.4rem');
+            $('.right-area').show();
+            play();
+          })
+
+          $('#videoDom')[0].addEventListener("x5videoexitfullscreen", function () {
+            $('.share-arrow').css('top', '0');
+            $('.share-tip').css('top', '2rem');
+            $(this).css('top', '0');
+
+            $('.header').removeClass('play');
+            $('.right-area').hide();
+            pause();
+          })
+
+          $('#videoDom').touchClick(function (self, e) {
+            e.preventDefault();
+            if ($('#videoDom')[0].paused) {
+              play();
+            }
+            else {
+              pause();
+            }
+          });
+
+          $('#videoControl').touchClick(function (self, e) {
+            e.preventDefault();
+            if ($('#videoDom')[0].paused) {
+              play();
+            }
+            else {
+              pause();
+            }
+          });
+
+          $('.replay').touchClick(function (self, e) {
+            $('.stop-recommend-list').css({ 'opacity': 0, 'zIndex': -1 });
+            $('.header').addClass('play');
+            play();
+          });
+
+          $('.close').on('touchend', function (e) {
+            $('.download-container').removeClass('bounceInDown');
+            $('.download-container').addClass('bounceOutUp');
+            setTimeout(function () { $('.download-container-mask').hide(); }, 1000)
+            if (!paused) {
+              play();
+            }
+          });
+
+          $('.js_download_dialog_button').touchClick(function (self, e) {
+            paused = $('#videoDom')[0].paused;
+            $('.download-container').removeClass('bounceOutUp');
+            $('.download-container').addClass('bounceInDown');
+            $('.download-container-mask').show();
+            pause();
+          });
+
+          function openNativeApp(scheme, callback) {
+            var _clickTime = +(new Date());
+            window.location = scheme;
+            var _count = 0, intHandle, opened = false;
+            intHandle = setInterval(function () {
+              _count++;
+              var elsTime = +(new Date()) - _clickTime;
+              if (_count >= 100) {
+                clearInterval(intHandle);
+                if (elsTime > 8500 || document.hidden || document.webkitHidden) {
+                  return
+                }
+                else {
+                  callback();
+                }
+              }
+            }, 80);
+          }
+
+          $('.js_open_app').on('touchend', function (e) {
+            if (isWeiXin) {
+              window.location = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.sohu.vtell&android_scheme=' + schemeStr;
+            }
+            else if (isWeiBo) {
+              $('.weibo-open-container').show();
+              pause();
+            }
+            else {
+              openNativeApp(schemeStr, function () { window.location = $('.download-link').data('href'); });
+            }
+
+          });
+
+          $('.weibo-open-container').on('touchend', function (e) {
+            $(this).hide();
+            play();
+          })
+
+          $('.js_share_button').touchClick(function (self, e) {
+            $('.weixin-share-container').show();
+            $('.video-playing-info').hide();
+            pause();
+          });
+
+          $('.weixin-share-container').touchClick(function (self, e) {
+            $(self).hide();
+            $('.video-playing-info').show();
+            play();
+          })
+
+
+          if (isWeiXin) {
+            $.ajax({
+              type: 'POST',
+              url: _base_config.prefix + '/nodeapi/wechat/ticket',
+              data: JSON.stringify({ url: location.href }),
+              contentType: 'application/json',
+              success: function (res) {
+                var wechatConfig = res.data
+                wx.config({
+                  debug: false,
+                  appId: 'wx18a9676834551c7c', // 必填，公众号的唯一标识
+                  timestamp: Number(wechatConfig.timestamp), // 必填，生成签名的时间戳
+                  nonceStr: wechatConfig.nonceStr, // 必填，生成签名的随机串
+                  signature: wechatConfig.signature,// 必填，签名，见附录1
+                  jsApiList: [
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'onMenuShareWeibo',
+                    'onMenuShareQZone',
+                  ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                });
+
+                wx.ready(function () {
+                  wx.onMenuShareTimeline({
+                    title: _base_config.timelineTitle, // 分享标题
+                    link: wechatConfig.url, // 分享链接，该链接域名必须与当前企业的可信域名一致
+                    imgUrl: _base_config.shareImgUrl, // 分享图标
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+
+                  wx.onMenuShareAppMessage({
+                    title: _base_config.appMessageTitle, // 分享标题
+                    // desc: _base_config.appMessageDesc, // 分享描述
+                    link: wechatConfig.url, // 分享链接，该链接域名必须与当前企业的可信域名一致
+                    imgUrl: _base_config.shareImgUrl, // 分享图标
+                    type: 'link', // 分享类型,music、video或link，不填默认为link
+                    dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+
+                  wx.onMenuShareQZone({
+                    title: _base_config.timelineTitle, // 分享标题
+                    link: wechatConfig.url, // 分享链接，该链接域名必须与当前企业的可信域名一致
+                    imgUrl: _base_config.shareImgUrl, // 分享图标
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+
+                  wx.onMenuShareQQ({
+                    title: _base_config.appMessageTitle, // 分享标题
+                    // desc: _base_config.appMessageDesc, // 分享描述
+                    link: wechatConfig.url, // 分享链接，该链接域名必须与当前企业的可信域名一致
+                    imgUrl: _base_config.shareImgUrl, // 分享图标
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+
+                  wx.onMenuShareWeibo({
+                    title: _base_config.weiboMessageTitle, // 分享标题
+                    // desc: _base_config.appMessageDesc, // 分享描述
+                    link: wechatConfig.url, // 分享链接，该链接域名必须与当前企业的可信域名一致
+                    imgUrl: _base_config.shareImgUrl, // 分享图标
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+
+                });
+              },
+              error: function (error) {
+                console.dir(error);
+              }
+            })
+          }
+        })
+
+</script>
+
+</html>

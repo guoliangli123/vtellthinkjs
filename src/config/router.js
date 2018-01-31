@@ -1,3 +1,4 @@
 module.exports = [
-  ['/report/:videoId', 'report']
+  ['/report/:videoId', 'report'],
+  ['/m/sharevideo/:videoId', 'm/sharevideo'],
 ];
