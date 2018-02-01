@@ -23,7 +23,6 @@ function getEntry() {
         }
     });
 
-    //给第三的口子
     return files;
 }
 
@@ -37,37 +36,18 @@ module.exports = {
       filename: "[name].js",
       path: path.join(ROOT_PATH, "./dist/js/"),
     },
-    // externals: {
-    //     jquery: "jQuery"
-    // },
     module: {
         loaders: [
             {
-                test: /\.js?$/,                   
+                test: /\.js$/,                   
                 loader: 'babel',         //es6语法
                 exclude: /node_modules/, // include/exclude:手动添加必须处理的文件（文件夹）或屏蔽不需要处理的文件（文件夹）（可选）；
-                query: {
-                    presets: ['es2015'] //也可以通过外部配置文件.babelrc
-                }
             },
-            // {
-            //     test: /\.(eot|woff|svg|ttf|woff2|gif)(\?|$)/,
-            //     loader: 'file-loader?name=[hash].[ext]'
-            // },
-            // {
-            //     test: /\.(png|jpg)$/,
-            //     loader: 'url?limit=1200&name=[hash].[ext]' //注意后面那个limit的参数，当你图片大小小于这个限制的时候，会自动启用base64编码图片
-            // }
-
         ],
         noParse: []
     },
     resolve: {
-        alias: {
-            // jquery: path.join(ROOT_PATH, "./lib/jquery.min.js"),   //别名
-            // core: srcDir + "/js/core",
-            // ui: srcDir + "/js/ui"
-        }
+      extensions: ['.js', '.vue', '.json'],
     },
     plugins: [
         //公共common

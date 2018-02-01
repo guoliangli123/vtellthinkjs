@@ -2,23 +2,20 @@ const Base = require('./base.js');
 
 module.exports = class extends Base {
   async sharevideoAction() {
-    let videoId = this.get("videoId");
-    let data = null;
-    try{
-      data = await this.fetch({
-        uri: 'http://youxitest.sohucs.com/api/getShareVideInfo',
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({ videoId }),
-      });
-    }catch(e){};
+    const videoId = this.get('videoId');
+    
+    const data = await this.fetch({
+      uri: 'http://youxitest.sohucs.com/api/getShareVideInfo',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ videoId }),
+    });
     
     const recommendList = data.hotVideoList;
     const topVideoList = data.topVideoList;
     const videoInfo = data.videoInfo;
-    console.log(videoInfo,'videoInfo');
     const verified = videoInfo && videoInfo.verified ? data.videoInfo.verified : 0;
     const videoTitle = videoInfo && videoInfo.caption || '有戏短视频';
     const thumbnailUrl = videoInfo.staticCoverUrl;
@@ -33,7 +30,7 @@ module.exports = class extends Base {
     shareInfo.weiboMessageTitle = `#有戏#灯光师看这里,@${videoInfo.author.authorName}正在和爱豆同框对戏，快来瞅瞅~`;
     shareInfo.appMessageDesc = `灯光师看这里，@${videoInfo.author.authorName}讲了个惊天大八卦，快来瞅瞅`;
     shareInfo.timelineTitle = `@${videoInfo.author.authorName}发布了一个有戏短视频，快来瞅瞅Ta和哪个爱豆在对戏~`;
-
+    
     this.assign({
       title: videoTitle,
       videoInfo,
@@ -43,8 +40,8 @@ module.exports = class extends Base {
       topVideoList,
       shareInfo,
       aspectRatio
-    }); 
+    });
 
-    this.display('./share');
+    return this.display('./share');
   }
 };

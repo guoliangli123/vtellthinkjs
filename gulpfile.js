@@ -45,14 +45,6 @@ gulp.task('clean', () => {
 });
 
 
-//拷贝任务
-// gulp.task('copy:js',()=>{
-//   return gulp.src(cfg.path.libjs)
-//   .pipe(changed(cfg.path.libjsdest))
-//   .pipe(gulp.dest(cfg.path.libjsdest))
-// })
-
-
 gulp.task('build:js', () => {
   const f = filter(cfg.path.filter.js, { restore: true });
   return gulp.src(cfg.path.js)
@@ -62,7 +54,7 @@ gulp.task('build:js', () => {
     .pipe(debug({title: 'webpack编译前:'}))
     .pipe(webpack({
       devtool: 'source-map',
-      entry:cfg.webpackEntry,
+      // entry:cfg.webpackEntry,
       output: {
         filename: '[name].js',
       },
@@ -146,7 +138,7 @@ gulp.task('browser-reload', () => {
   browserSync.reload();
 });
 
-// gulp.task('watch', () => {
+
 gulp.task('watch', ['browser-sync'], () => {
   gulp.watch([cfg.path.js], ['build:js']);
   gulp.watch([cfg.path.html], ['build:html']);
