@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="{{ config.path_prefix }}/css/lib/mui.min.css">
+  <title>说出你想要的
+  </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body,
+    .content {
+      height: 100%;
+    }
+
+    body {
+      font-family: PingFangSC, arial, verdana, Microsoft YaHei, sans-serif;
+      background: #fff url("{{ config.path_prefix }}/images/sayyouwant.jpg") no-repeat;
+      line-height: 1.5;
+      background-size: 100%;
+    }
+
+    h1 {
+      font-size: .38rem;
+      color: #42208d;
+      font-weight: 100;
+      margin-bottom: .2rem;
+    }
+
+    .textarea__wrapper {
+      display: inline-block;
+      width: 100%;
+      vertical-align: bottom;
+    }
+
+    .content {
+      padding: 5.35rem .38rem .76rem;
+    }
+
+    .submit-container {
+      margin-top: .6rem;
+      text-align: center;
+    }
+
+    .submit-container button {
+      font-size: .35rem;
+      color: #ffffff;
+      padding: .23rem 1.35rem;
+      border-radius: 1rem;
+      background-color: #837af7;
+      box-shadow: 11px 16px 24px 0 rgba(104, 63, 245, 0.39);
+      border: none;
+      font-weight: 100;
+    }
+
+    textarea {
+      display: block;
+      resize: vertical;
+      padding: 5px 7px;
+      line-height: 1.5;
+      box-sizing: border-box;
+      width: 100%;
+      font-size: .26rem;
+      color: #42208d;
+      background-color: #fff;
+      background-image: none;
+      border: solid 2px #42208d;
+      border-radius: .18rem;
+      box-shadow: 0 2px 6px 0 rgba(104, 63, 245, 0.5);
+      transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+      margin: 0;
+    }
+
+    textarea::-webkit-input-placeholder {
+      color: #42208d;
+    }
+
+    textarea:-moz-placeholder {
+      color: #42208d;
+    }
+
+    textarea::-moz-placeholder {
+      color: #42208d;
+    }
+
+    textarea:-ms-input-placeholder {
+      color: #42208d;
+    }
+
+    .mui-toast-container {
+      bottom: 50%;
+      transform: translate(-50%, -50%)
+    }
+
+    .mui-toast-message {
+      border-radius: 37px
+    }
+  </style>
+  <script>
+    var deviceWidth = document.documentElement.clientWidth < 750 ? document.documentElement.clientWidth : 750;
+    document.documentElement.style.fontSize = deviceWidth / 7.5 + 'px';
+  </script>
+</head>
+
+<body>
+  <div class="content">
+    <h1>片段描述</h1>
+    <form id="sayyouwantform">
+      <div class="textarea__wrapper">
+        <textarea id="inputText" cols="30" rows="10" placeholder="在此描述你喜欢的视频片段，具体的名称、时间点、链接（如有），也可以文字描述具体片段内容哦~"></textarea>
+      </div>
+      <div class="submit-container">
+        <button type="submit">提交</button>
+      </div>
+    </form>
+  </div>
+</body>
+<script src="{{config.path_prefix}}/js/common/errorReport.js"></script>
+<script src="https://apps.bdimg.com/libs/zepto/1.1.4/zepto.min.js"></script>
+<script src="{{ config.path_prefix }}/js/lib/zepto.touch.min.js"></script>
+<script src="{{ config.path_prefix }}/js/lib/mui.min.js"></script>
+<script src="{{ config.path_prefix }}/js/pages/sayyouwant.js"></script>
+</html>

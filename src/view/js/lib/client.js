@@ -29,7 +29,7 @@ function callIOSNative(msg, code, callback) {
 }
 
 function callAndroidNative(msg, code, callback) {
-  var retval = window.VTellAndroidNative.callNative(JSON.stringify({ msg: msg, code: code }));
+  var retval = VTellAndroidNative.callNative(JSON.stringify({ msg: msg, code: code }));
   if (typeof callback === 'function') {
     callback(parseResponse(retval));
   }

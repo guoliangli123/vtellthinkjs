@@ -9,10 +9,6 @@ module.exports = function request(ctx,options,config){
 
   function requestWrapper(resolve){
     return Request(opt,(error,response,body)=>{
-      // console.log('返回response',response)
-      // console.log('返回body',body);
-      // console.log(response,body);
-      let status = response && response.statusCode || 'NULL';
       resolve(config.callBack(response,body || error));
     })
   }

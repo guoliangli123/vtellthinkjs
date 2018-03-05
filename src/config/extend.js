@@ -3,6 +3,7 @@ const model = require('think-model');
 const cache = require('think-cache');
 const session = require('think-session');
 const fetch = require('think-fetch');
+const mongo = require('think-mongo');
 
 module.exports = [
   view, // make application support view
@@ -10,4 +11,5 @@ module.exports = [
   cache,
   session,
   fetch,
+  mongo(think.app),
 ];

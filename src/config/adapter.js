@@ -27,25 +27,43 @@ exports.cache = {
  * model adapter config
  * @type {Object}
  */
+// exports.model = {
+//   type: 'mysql',
+//   common: {
+//     logConnect: isDev,
+//     logSql: isDev,
+//     logger: msg => think.logger.info(msg)
+//   },
+//   mysql: {
+//     handle: mysql,
+//     database: '',
+//     prefix: 'think_',
+//     encoding: 'utf8',
+//     host: '127.0.0.1',
+//     port: '',
+//     user: 'root',
+//     password: 'root',
+//     dateStrings: true
+//   }
+// };
 exports.model = {
-  type: 'mysql',
-  common: {
-    logConnect: isDev,
-    logSql: isDev,
-    logger: msg => think.logger.info(msg)
+  type: 'mongo', // 默认使用的类型，调用时可以指定参数切换
+  common: { // 通用配置
+    logConnect: true, // 是否打印数据库连接信息
+    logger: msg => think.logger.info(msg) // 打印信息的 logger
   },
-  mysql: {
-    handle: mysql,
-    database: '',
-    prefix: 'think_',
-    encoding: 'utf8',
-    host: '127.0.0.1',
-    port: '',
-    user: 'root',
-    password: 'root',
-    dateStrings: true
+  mongo: {
+    host: '10.10.54.35',
+    port: 27017,
+    user: '',
+    password: '',
+    database: 'vtellthink', // 数据库名称
+    // options: {
+    //   replicaSet: 'mgset-3074013',
+    //   authSource: 'admin'
+    // }
   }
-};
+}
 
 /**
  * session adapter config
@@ -87,7 +105,8 @@ exports.view = {
  * @type {Object}
  */
 exports.logger = {
-  type: isDev ? 'console' : 'dateFile',
+  // type: isDev ? 'console' : 'dateFile',
+  type:'console',
   console: {
     handle: Console
   },
@@ -107,3 +126,4 @@ exports.logger = {
     filename: path.join(think.ROOT_PATH, 'logs/app.log')
   }
 };
+

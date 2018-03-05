@@ -137,87 +137,18 @@
     </div>
   </div>
 </body>
+<script src="{{config.path_prefix}}/js/common/errorReport.js"></script>
+<script src="{{ config.path_prefix }}/js/common/errorReport.js"></script>
 <script src="https://apps.bdimg.com/libs/zepto/1.1.4/zepto.min.js"></script>
 <script src="{{ config.path_prefix }}/js/lib/zepto.touch.min.js"></script>
 <script src="{{ config.path_prefix }}/js/lib/mui.min.js"></script>
-<script src="{{ config.path_prefix }}/js/lib/md5.min.js"></script>
-<script src="{{ config.path_prefix }}/js/utils/client.js"></script>
 
 <script type="text/javascript">
   var _config = {
     videoId: '{{ videoId }}',
   };
 </script>
-<script>
-  function generateSign(method, url, time) {
-    var signstring = method + url + '?t=' + time + '&key=Rs7Fqd4lfyS8apgfqsZRlUlOpt7cK4AyMEarPQYJbVlQiHMPAUVpx8PvTo26vzYW';
-    var sign = '01' + md5(signstring).toUpperCase().substr(8, 16);
-    return sign;
-  }
 
-  Zepto(function ($) {
-
-    $('.table-view-cell').tap(function (e) {
-      $('.table-view-cell').removeClass('active');
-      $(this).addClass('active');
-    })
-
-    $('.submitButton').on('touchend', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      if ($('.table-view-cell.active').length == 0) {
-        mui.toast('请选择举报理由', { duration: 1000 });
-        return;
-      }
-      var cause = $('.table-view-cell.active').data('value');
-
-      var token;
-
-      // vTellClient.getToken(function (response) {
-      //   token = response.token;
-      // });
-
-      var timeStamp = Date.parse(new Date()) / 1000
-      var sign = generateSign('POST', '/nodeapi/reportvideo', timeStamp);
-
-      var header = {
-        sign: sign,
-        token: token,
-        t: timeStamp,
-      }
-
-      $('.submitButton')[0].disabled = true;
-
-      $.ajax({
-        type: 'POST',
-        url: '/nodeapi/report',
-        data: JSON.stringify({ "cause": cause, "videoId": _config.videoId }),
-        headers: header,
-        dataType: 'json',
-        contentType: 'application/json',
-        timeout: 10000,
-        success: function (data) {
-          mui.toast('举报成功', { duration: 1000 });
-          setTimeout(function () {
-            vTellClient.closePage();
-          }, 1500);
-        },
-        error: function (xhr, type, err) {
-          if (xhr.status == 401) {
-            mui.toast('token失效,请重新登陆', { duration: 1000 });
-            vTellClient.tokenTimeOut();
-          }
-          else {
-            mui.toast('网络状态稍差，请稍后', { duration: 1000 });
-          }
-        },
-        complete: function () {
-          $('.submitButton')[0].disabled = false;
-        }
-      })
-    })
-  })
-
-</script>
+<script src="{{ config.path_prefix }}/js/pages/report.js"> </script>
 
 </html>

@@ -1,9 +1,10 @@
 const Base = require('./base.js');
 
 module.exports = class extends Base {
-  indexAction() {
+  async indexAction() {
     let videoId = this.get("videoId");
     let { platform,version } = this.ctx.query;
+
     //给模板赋
     this.assign({
       videoId
