@@ -4,8 +4,9 @@ const ticketApi = require('../service/ticket')
 
 module.exports = class extends Base {
   async indexAction() {
-    let appId = 'wx18a9676834551c7c'
-    let secret = '5054c8afddc4b2943a72530ea36442d1'
+    // 根据自己app详情填写
+    // let appId = 微信appid
+    // let secret = 微信secret
     let url = this.post('url')
 
     let ticket = ticketApi.get()
