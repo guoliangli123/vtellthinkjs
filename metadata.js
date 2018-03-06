@@ -30,27 +30,29 @@ module.exports = {
       ["eslintrc", ".eslintrc"],
       ["gitignore", ".gitignore"],
       ["nginx.conf", "nginx.conf"],
+      ["babelrc",".babelrc"],
+      ["npmrc",".npmrc"],
       ["package.json", "package.json"],
     ],
-    // "multiModule": [
-    //   ["src/bootstrap", "src/common/bootstrap"],
-    //   ["src/config", "src/common/config"],
-    //   ["src/config/config.js", "src/[moduleName]/config/config.js"],
-    //   ["src/controller/base.js", "src/[moduleName]/controller/base.js"],
-    //   ["src/controller/index.js", "src/[moduleName]/controller/index.js"],
-    //   ["src/logic", "src/[moduleName]/logic"],
-    //   ["src/model", "src/[moduleName]/model"],
-    //   ["test/index.js", "test/index.js"],
-    //   ["view/index_index.html", "view/[moduleName]/index_index.html"],
-    //   ["development.js", "development.js"],
-    //   ["eslintrc", ".eslintrc"],
-    //   ["gitignore", ".gitignore"],
-    //   ["nginx.conf", "nginx.conf"],
-    //   ["package.json", "package.json"],
-    //   ["pm2.json", "pm2.json"],
-    //   ["production.js", "production.js"],
-    //   ["README.md", "README.md"]
-    // ]
+    "multiModule": [
+      ["src/bootstrap", "src/common/bootstrap"],
+      ["src/config", "src/common/config"],
+      ["src/config/config.js", "src/[moduleName]/config/config.js"],
+      ["src/controller/base.js", "src/[moduleName]/controller/base.js"],
+      ["src/controller/index.js", "src/[moduleName]/controller/index.js"],
+      ["src/logic", "src/[moduleName]/logic"],
+      ["src/model", "src/[moduleName]/model"],
+      ["test/index.js", "test/index.js"],
+      ["view/index_index.html", "view/[moduleName]/index_index.html"],
+      ["development.js", "development.js"],
+      ["eslintrc", ".eslintrc"],
+      ["gitignore", ".gitignore"],
+      ["nginx.conf", "nginx.conf"],
+      ["package.json", "package.json"],
+      ["pm2.json", "pm2.json"],
+      ["production.js", "production.js"],
+      ["README.md", "README.md"]
+    ]
   },
   "controller": {
     "default": [
